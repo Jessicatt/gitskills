@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // console.log(a, 1111)    //2let和const命令.html:13 Uncaught ReferenceError: a is not defined
+        /*
+        console.log(b, 2222)    //undefined 2222
+        {
+            let a = 10;
+            var b = 1;
+        }
+        // console.log(a, 1112)    //Uncaught ReferenceError: a is not defined
+        console.log(b, 2223)    //1 2223
+        */
+       /*
+        for(let i=0;i<10;i++,console.log(i,3)){
+            console.log(i,4444)
+        }
+        console.log(i,2)
+        */
+       /*
+        for(var i=0;i<10;i++,console.log(i,3)){
+            console.log(i,4444)
+        }
+        console.log(i,2)
+        */
+       /*
+       var a = [];
+        for(var i=0;i<10;i++){
+            a[i]=function(){
+                console.log(i,4444)
+            }
+            a[i]()
+        }
+        a[6]();
+        */
+       /*
+        var a = [];
+        for(let i=0;i<10;i++){
+            //并没有报错,for循环还有一个特别之处，就是设置循环变量的那部分是一个父作用域，而循环体内部是一个单独的子作用域。
+            //变量i是let声明的，当前的i只在本轮循环有效，所以每一次循环的i其实都是一个新的变量，所以最后输出的是6。你可能会问，如果每一轮循环的变量i都是重新声明的，那它怎么知道上一轮循环的值，从而计算出本轮循环的值？这是因为 JavaScript 引擎内部会记住上一轮循环的值，初始化本轮的变量i时，就在上一轮循环的基础上进行计算
+            let i ='abc';  
+            // let i=789;  //Uncaught SyntaxError: Identifier 'i' has already been declared
+            a[i]=function(){
+                console.log(i,4444)
+            }
+            a[i]()
+        }
+        // a[6](); //Uncaught TypeError: a[6] is not a function
+        */
+
+        /*
+var命令会发生”变量提升“现象，即变量可以在声明之前使用，值为undefined。这种现象多多少少是有些奇怪的，按照一般的逻辑，变量应该在声明语句之后才可以使用。
+
+为了纠正这种现象，let命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。
+上面代码中，变量foo用var命令声明，会发生变量提升，即脚本开始运行时，变量foo已经存在了，但是没有值，所以会输出undefined。变量bar用let命令声明，不会发生变量提升。这表示在声明它之前，变量bar是不存在的，这时如果用到它，就会抛出一个错误。
+    //    console.log(foo); //undefined 变量提升 
+    //    var foo = 2;
+
+        console.log(bar);   //Uncaught ReferenceError: bar is not defined
+       let bar= 3;
+       */
+      
+// <!-- 
+// 只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
+// 代码中，存在全局变量tmp，但是块级作用域内let又声明了一个局部变量tmp，导致后者绑定这个块级作用域，所以在let声明变量前，对tmp赋值会报错。
+
+// ES6 明确规定，如果区块中存在let和const命令，这个区块对这些命令声明的变量，从一开始就形成了封闭作用域。凡是在声明之前就使用这些变量，就会报错。
+// 在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称 TDZ）
+// 在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称 TDZ）
+// 代码中，变量x使用let命令声明，所以在声明之前，都属于x的“死区”，只要用到该变量就会报错。因此，typeof运行时就会抛出一个ReferenceError。
+
+// 作为比较，如果一个变量根本没有被声明，使用typeof反而不会报错。
+// 代码中，undeclared_variable是一个不存在的变量名，结果返回“undefined”。所以，在没有let之前，typeof运算符是百分之百安全的，永远不会报错。现在这一点不成立了。这样的设计是为了让大家养成良好的编程习惯，变量一定要在声明之后使用，否则就报错。
+//  -->
+/*
+       var tmp = 123;
+console.log(tmp,1)  //123
+if (true) {
+//   tmp = 'abc'; // Uncaught ReferenceError: tmp is not defined
+//   console.log(tmp,2)
+// typeof tmp; //Uncaught ReferenceError: tmp is not defined
+  let tmp;
+  console.log(typeof tmp,6);
+  console.log(tmp,3); // undefined
+
+  tmp = '456';
+  console.log(typeof tmp,7);    //string
+  console.log(tmp,4); // 123
+}
+console.log(tmp,5);
+*/
+// 有些“死区”比较隐蔽，不太容易发现。
+// 上面代码中，调用bar函数之所以报错（某些实现可能不报错），是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。如果y的默认值是x，就不会报错，因为此时x已经声明了。
+/*
+function bar(x=y, y=2){  //Uncaught ReferenceError: y is not defined
+    return [x,y];
+}
+// function bar(x=3,y=x){  //Uncaught ReferenceError: y is not defined
+//     return [x,y];
+// }
+// bar();  //报错
+console.log(bar(1,4));
+*/
+// 上面代码报错，也是因为暂时性死区。使用let声明变量时，只要变量在还没有声明完成前使用，就会报错。上面这行就属于这个情况，在变量x的声明语句还没有执行完成前，就去取x的值，导致报错”x 未定义“。
+// ES6 规定暂时性死区和let、const语句不出现变量提升，主要是为了减少运行时错误，防止在变量声明前就使用这个变量，从而导致意料之外的行为。这样的错误在 ES5 是很常见的，现在有了这种规定，避免此类错误就很容易了。
+// 总之，暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。
+/* var x = x;   //undefined
+x=123;    
+let x = x   //Uncaught ReferenceError: x is not defined; Uncaught SyntaxError: Identifier 'x' has already been declared
+console.log(x);
+*/
+
+// 不允许重复声明
+// let不允许在相同作用域内，重复声明同一个变量。
+// 因此，不能在函数内部重新声明参数。
+/*
+// function func(){
+//     let a = 10;
+//     var a=1;    //Uncaught SyntaxError: Identifier 'a' has already been declared
+// }
+function func() {
+  let a = 10;
+  let a = 1;
+}
+*/
+/*
+function func(args){
+    let args;   //Uncaught SyntaxError: Identifier 'args' has already been declared
+}
+function func(args){
+    {
+        let args;    
+    }
+}
+func()
+*/
+// 为什么需要块级作用域？
+// ES5 只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。
+// 第一种场景，内层变量可能会覆盖外层变量。
+/*
+var tmp = new Date();
+console.log(tmp,111)
+function f(){
+    // 函数作用域
+    console.log(tmp,222);
+    // if(false){
+    if(true){
+        var tmp ='hello world';
+        // tmp ='hello world';
+    }
+    console.log(tmp,333);
+}
+f();
+console.log(tmp,444)
+*/
+// 上面代码的原意是，if代码块的外部使用外层的tmp变量，内部使用内层的tmp变量。但是，函数f执行后，输出结果为undefined，原因在于变量提升，导致内层的tmp变量覆盖了外层的tmp变量。
+
+// 第二种场景，用来计数的循环变量泄露为全局变量。
+/*
+var s='hello';
+for(var i=0;i<s.length;i++){
+    console.log(s[i]);
+}
+console.log(i);
+*/
+// ES6 的块级作用域
+// let实际上为 JavaScript 新增了块级作用域。
+/*
+function f1(){
+    let n = 5;
+    // var n = 5;
+    if(true){
+        let n = 10;
+        // var n = 10;
+    }
+    console.log(n); //5
+}
+f1();
+*/
+// 上面的函数有两个代码块，都声明了变量n，运行后输出 5。这表示外层代码块不受内层代码块的影响。如果两次都使用var定义变量n，最后输出的值才是 10。
+
+// ES6 允许块级作用域的任意嵌套。
+// 内层作用域可以定义外层作用域的同名变量。
+/*
+{{{{
+    let insane = 'hello world1'
+    {
+        let insane = 'hello world2'
+    }
+    console.log(insane); // 报错
+}}}};
+*/
+// 块级作用域的出现，实际上使得获得广泛应用的立即执行函数表达式（IIFE）不再必要了。
+/*
+// IIFE 写法
+(function () {
+  var tmp = ...;
+  ...
+}());
+
+// 块级作用域写法
+{
+  let tmp = ...;
+  ...
+}
+*/
+
+// ES6 引入了块级作用域，明确允许在块级作用域之中声明函数。ES6 规定，块级作用域之中，函数声明语句的行为类似于let，在块级作用域之外不可引用。
+// function f(){ console.log('I am outside!'); }
+// (function(){
+//     if(false){
+//         //重复声明一次函数f
+//         function f(){console.log('I am inside!')}
+//     }
+//     f();    // Uncaught TypeError: f is not a function
+// }());
+// 上面的代码在符合 ES6 的浏览器中，都会报错，因为实际运行的是下面的代码
+/*
+function f() { console.log('I am outside!'); }
+(function () {
+  var f = undefined;
+  if (false) {
+    function f() { console.log('I am inside!'); }
+  }
+  f();
+}());
+*/
+// 考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
+/*
+function f() { console.log('I am outside!'); }
+(function () {
+  if (true) {
+    var f = function() { console.log('I am inside!'); }
+  }
+  f();
+}());
+*/
+
+/*
+const PI = 3.1415;
+// PI;
+PI=3;//Uncaught TypeError: Assignment to constant variable.
+console.log(PI);
+
+const foo;// SyntaxError: Missing initializer in const declaration
+*/
+
+// const的作用域与let命令相同：只在声明所在的块级作用域内有效。
+/*
+if (true) {
+    const MAX=5;
+    console.log(MAX,222)
+}
+console.log(MAX,111)
+*/
+// const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
+/*
+if (true) {
+//   console.log(MAX); // Uncaught ReferenceError: MAX is not defined
+  const MAX = 5;
+  console.log(MAX,111)
+}
+// const声明的常量，也与let一样不可重复声明。
+
+var message = "Hello!";
+let age = 25;
+
+// 以下两行都会报错
+const message = "Goodbye!"; //Uncaught SyntaxError: Identifier 'message' has already been declared
+const age = 30;     //Uncaught SyntaxError: Identifier 'age' has already been declared
+*/
+// 本质
+// const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动。对于简单类型的数据（数值、字符串、布尔值），值就保存在变量指向的那个内存地址，因此等同于常量。但对于复合类型的数据（主要是对象和数组），变量指向的内存地址，保存的只是一个指向实际数据的指针，const只能保证这个指针是固定的（即总是指向另一个固定的地址），至于它指向的数据结构是不是可变的，就完全不能控制了。因此，将一个对象声明为常量必须非常小心。
+/*
+const foo ={};
+foo.prop = 123;
+console.log(foo.prop);
+// foo={}; //Uncaught TypeError: Assignment to constant variable.
+*/
+
+/*
+const a = [];
+a.push('Hello'); // 可执行
+a.length = 0;    // 可执行
+a = ['Dave'];    // 报错
+*/
+/*
+const foo = Object.freeze({});
+
+// 常规模式时，下面一行不起作用；
+// 严格模式时，该行会报错
+"use strict";
+foo.prop = 123;
+*/
+
+
+
+// 小彩蛋 与es6无关
+/*function test() {
+    debugger;
+    var a = { 
+        n: 1
+    };
+    var b = a;
+    a.x = a = {n: 2};
+    // a.x = a = 4;
+    console.log(a.x,a,b); //undefined
+    // console.log(b.x); //{n:2}
+    a.x=55;
+    console.log(a,b)
+}
+test()
+*/
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "es6-demo",
+  "version": "1.0.0",
+  "description": "根据阮一峰官网写的小demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JessicaCoder/gitskills.git"
+  },
+  "keywords": [
+    "es6",
+    "阮一峰"
+  ],
+  "author": "shengrong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JessicaCoder/gitskills/issues"
+  },
+  "homepage": "https://github.com/JessicaCoder/gitskills#readme",
+  "dependencies": {
+    "deepmerge": "^2.2.1"
+  }
+}
